@@ -70,6 +70,18 @@ const API = {
       });
   },
 
+  evictTenant (tenantId, propertyId) {
+    axios.put(`/api/properties/${propertyId}/removeTenant/${tenantId}`)
+      .then(this.fetchProperties())
+      .then((res) => {
+        console.log('res.data: ', res.data);
+        ServerActions.receiveProperties(res.data);
+      })
+      .catch((err) => {
+        console.log('ERROR! API.updateTenant', err);
+      });
+  },
+
   removeProperty (id) {
     axios.delete(`/api/properties/${id}`)
       .then(this.fetchProperties())

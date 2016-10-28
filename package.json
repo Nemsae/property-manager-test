@@ -2,10 +2,10 @@
   "name": "Property-Manager",
   "version": "1.0.0",
   "description": "",
-  "main": "server/app.js",
+  "main": "server/server.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha ./server/test",
-    "start": "node server/app.js"
+    "start": "node server/server.js"
   },
   "keywords": [],
   "author": "John Son <jsson77@gmail.com>",

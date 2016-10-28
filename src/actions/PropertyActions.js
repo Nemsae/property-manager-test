@@ -21,6 +21,10 @@ const PropertyActions = {
     API.removeTenant(id);
   },
 
+  evictTenant (tenantId, propertyId) {
+    API.evictTenant(tenantId, propertyId);
+  },
+
   removeProperty (id) {
     API.removeProperty(id);
   },

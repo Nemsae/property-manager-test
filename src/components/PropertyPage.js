@@ -11,10 +11,12 @@ export default class PropertyPage extends Component {
     this.state = {
       properties: PropertyStore.getProperties(),
       propertyTenant: PropertyStore.getPropTenants(),
-      tenants: PropertyStore.getTenants()
+      tenants: PropertyStore.getTenants(),
+      propertyId: ''
     };
 
     this._onChange = this._onChange.bind(this);
+    this._convertToPhone = this._convertToPhone.bind(this);
   }
 
   componentWillMount () {
@@ -37,6 +39,9 @@ export default class PropertyPage extends Component {
 
   _fetchPropTenants (propId) {
     PropertyActions.fetchPropTenants(propId);
+    this.setState({
+      propertyId: propId
+    });
   }
 
   _deleteProperty (id) {
@@ -53,6 +58,23 @@ export default class PropertyPage extends Component {
     PropertyActions.updateTenant(tenantId, tenant);
   }
 
+  _convertToPhone (number) {
+    let arr = number.toString().split('');
+    arr.splice(0, 0, '(');
+    arr.splice(4, 0, ')');
+    arr.splice(8, 0, '-');
+    let result = arr.join('');
+    return result;
+  }
+
+  _evictTenant (tenantId, tenant) {
+    let { propertyId } = this.state;
+    tenant.rented = false;
+    console.log('tenant: ', tenant);
+    PropertyActions.evictTenant(tenantId, propertyId);
+    PropertyActions.updateTenant(tenantId, tenant);
+  }
+
   render () {
     let { properties, propertyTenant, tenants } = this.state;
     let PropertyTenant = [];
@@ -61,10 +83,12 @@ export default class PropertyPage extends Component {
     if (propertyTenant !== undefined) {
       PropertyTenant =
       propertyTenant.tenants.map((tenant, i) => {
+        let tenantPhone = this._convertToPhone(tenant.phone);
         return (
           <div key={i}>
             <h4>Tenant: {tenant.name}</h4>
-            <h4>Phone: {tenant.phone}</h4>
+            <h4>Phone: {tenantPhone}</h4>
+            <button className='btn btn-danger' onClick={this._evictTenant.bind(this, tenant._id, tenant)} data-dismiss='modal'>Evict</button>
           </div>
         );
       });
@@ -87,7 +111,7 @@ export default class PropertyPage extends Component {
                 <h4>Rent Base: {property.baseRent}</h4>
                 <h3>Total Rent: ${rentTotal}</h3>
 
-                <button data-toggle='modal' data-target={`#modal${property._id}`} onClick={this._fetchPropTenants.bind(this, property._id)}>Tenants</button>
+                <button className='btn btn-default' data-toggle='modal' data-target={`#modal${property._id}`} onClick={this._fetchPropTenants.bind(this, property._id)}>Tenants</button>
 
                 <div className='modal fade' id={`modal${property._id}`} tabIndex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
                   <div className='modal-dialog' role='document'>

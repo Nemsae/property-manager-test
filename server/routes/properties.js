@@ -36,8 +36,15 @@ router.route('/:id')
   })
   .delete((req, res) => {
     Property.findByIdAndRemove(req.params.id)
-      .then((something) => {
-        res.send(something);
+      .then((deletedProperty) => {
+        res.send(deletedProperty);
+      })
+      .catch((err) => res.status(400).send(err));
+  })
+  .put((req, res) => {
+    Property.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
+      .then((property) => {
+        res.send(property);
       })
       .catch((err) => res.status(400).send(err));
   });
@@ -51,6 +58,31 @@ router.put('/:propertyId/addTenant/:tenantId', (req, res) => {
       return property.save();  // async that returns promise
     })
     .then((savedProperty) => {
+      res.send(savedProperty);
+    })
+    .catch((err) => res.status(400).send(err));
+});
+
+router.put('/:propertyId/removeTenant/:tenantId', (req, res) => {
+  let { propertyId, tenantId } = req.params;
+
+  Property.findById(propertyId)
+    .then((property) => {
+      console.log('property1: ', property);
+      let property2 = property.tenants.filter((id) => {
+        if (id != tenantId) {
+          console.log('sanity');
+          return id;
+        } else {
+          return;
+        }
+      });
+      property.tenants = property2;
+      console.log('property2: ', property2);
+      return property.save();  // async that returns promise
+    })
+    .then((savedProperty) => {
+      console.log('savedProperty: ', savedProperty);
       res.send(savedProperty);
     })
     .catch((err) => res.status(400).send(err));

@@ -26,9 +26,8 @@ router.route('/:id')
   })
   .delete((req, res) => {
     Tenant.findByIdAndRemove(req.params.id)
-      .then((something) => {
-        console.log('something: ', something);
-        res.send(something);
+      .then((deletedTenant) => {
+        res.send(deletedTenant);
       })
       .catch((err) => res.status(400).send(err));
   });
